@@ -19,8 +19,7 @@ def EnclosedString(d, starts, ends):
 
 def getCount(d):
   s = EnclosedString(d, b"/Count ", b"/")
-  count = int(s)
-  return count
+  return int(s)
 
 template = b"""%%PDF-1.3
 %%\xC2\xB5\xC2\xB6
@@ -120,7 +119,7 @@ assert pe.startswith(b"MZ")
 PEoff, HdrLen, NumSec, SecTblOff, SectsStart = getPEhdr(pe)
 lenPE = len(pe[PEoff:])
 
-os.system('mutool merge -o merged.pdf dummy.pdf %s' % (sys.argv[1]))
+os.system(f'mutool merge -o merged.pdf dummy.pdf {sys.argv[1]}')
 
 with open("merged.pdf", "rb") as f:
   dm = f.read()
@@ -201,5 +200,5 @@ os.system('mutool info -X collision1.pdf')
 print()
 
 print()
-print("MD5: %s" % md5)
+print(f"MD5: {md5}")
 print("Success!")

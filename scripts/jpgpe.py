@@ -38,7 +38,7 @@ BaseOfCode = struct.unpack("i", peHDR[0x2c:0x2c+4])[0]
 FileAlig = struct.unpack("i", peHDR[0x3c:0x3c+4])[0]
 NumDir = struct.unpack("i", peHDR[0x74:0x74+4])[0]
 
-print("%s :" % fnEXE)
+print(f"{fnEXE} :")
 print(" # Sections: %i" % NumSec)
 print(" BaseOfCode: %xh" % BaseOfCode)
 print(" File Alignment: %xh" % FileAlig)

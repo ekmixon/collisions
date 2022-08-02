@@ -16,7 +16,7 @@ def dprint(s):
   DEBUG = True
   DEBUG = False
   if DEBUG:
-    print("D " + s)
+    print(f"D {s}")
 
 def setDWORD(d, offset, s):
   assert len(s) == 4
@@ -35,7 +35,7 @@ def relocateMP4(d, delta):
   offset = 0
   tablecount = d.count(b"stco")
   dprint("stco found: %i" % tablecount)
-  for i in range(tablecount):
+  for _ in range(tablecount):
     offset = d.find(b"stco", offset)
     dprint("current offset: %0X" % offset)
 
@@ -55,9 +55,9 @@ def relocateMP4(d, delta):
     dprint(" offset count: %i" % offcount)
     offset += 4 * 3
     offsets = struct.unpack(">%iI" % offcount, d[offset:offset + offcount * 4])
-    dprint(" offsets (old): %s" % repr(list(offsets))) 
+    dprint(f" offsets (old): {repr(list(offsets))}")
     offsets = [i + delta for i in offsets]
-    dprint(" (new) offsets: %s" % repr(offsets))
+    dprint(f" (new) offsets: {repr(offsets)}")
 
     d = d[:offset] + struct.pack(">%iI" % offcount, *offsets) + d[offset+offcount*4:]
 
@@ -77,8 +77,7 @@ def EnclosedString(d, starts, ends):
 
 def getCount(d):
   s = EnclosedString(d, b"/Count ", b"/")
-  count = int(s)
-  return count
+  return int(s)
 
 template = b"""%%PDF-1.3
 %%\xC2\xB5\xC2\xB6
@@ -177,7 +176,7 @@ assert pe.startswith(b"MZ")
 PEoff, HdrLen, NumSec, SecTblOff, SectsStart = getPEhdr(pe)
 lenPE = len(pe[PEoff:])
 
-os.system('mutool merge -o merged.pdf dummy.pdf %s' % (sys.argv[1]))
+os.system(f'mutool merge -o merged.pdf dummy.pdf {sys.argv[1]}')
 
 with open("merged.pdf", "rb") as f:
   dm = f.read()

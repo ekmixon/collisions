@@ -99,7 +99,7 @@ offset = hdrSize
 
 
 chunks = []
-while (True):
+while True:
   chunkStart = offset
   separator = d[offset]
 
@@ -119,9 +119,8 @@ while (True):
     break
 
   # discard comments
-  if separator == ord(b"!"):
-    if d[chunkStart + 1] == b"\xfe":
-      continue
+  if separator == ord(b"!") and d[chunkStart + 1] == b"\xfe":
+    continue
   chunks.append(Chunk(d, chunkStart, chunkEnd))
 
 
@@ -166,26 +165,26 @@ if (prefixLen % 64) != 63:
 
 prefixHash = hashlib.sha256(prefix).hexdigest()[:8]
 
-print("Prefix hash: %s" % prefixHash)
+print(f"Prefix hash: {prefixHash}")
 
 
-if not glob.glob("gif1-%s.bin" % prefixHash):
+if not glob.glob(f"gif1-{prefixHash}.bin"):
   print(" Not found! Launching computation...")
 
   with open("prefix", "wb") as f:
     f.write(prefix)
 
   os.system("fastcoll -p prefix")
-  shutil.copyfile("msg1.bin", "gif1-%s.bin" % prefixHash)
-  shutil.copyfile("msg2.bin", "gif2-%s.bin" % prefixHash)
+  shutil.copyfile("msg1.bin", f"gif1-{prefixHash}.bin")
+  shutil.copyfile("msg2.bin", f"gif2-{prefixHash}.bin")
 else:
   print(" already present.")
 
 
 
-with open("gif1-%s.bin" % prefixHash, "rb") as f:
+with open(f"gif1-{prefixHash}.bin", "rb") as f:
   block1 = f.read()
-with open("gif2-%s.bin" % prefixHash, "rb") as f:
+with open(f"gif2-{prefixHash}.bin", "rb") as f:
   block2 = f.read()
 
 
@@ -210,9 +209,6 @@ suffix = (offMin - 4) * b" "     # finishing the first comment subblock
 suffix += bytes([0x80]) + 0x7f * b" "     # trampoline between subblocks
 
 suffix += bytes([0x14, 0])       # 14 = extend the comment subblock to the image data subblock
-                                 #      (local palette is not supported)
-                                 # 00 = close the comment extension before the GCE
-
 suffix += d[chunks[0].start:]    # append the rest of the data
 
 
@@ -224,5 +220,9 @@ with open("collide2.gif", "wb") as f:
 
 
 print("Files written OK:")
-print(" %s %s" % (hashlib.md5(block1 + suffix).hexdigest(), hashlib.sha256(block1 + suffix).hexdigest()))
-print(" %s %s" % (hashlib.md5(block2 + suffix).hexdigest(), hashlib.sha256(block2 + suffix).hexdigest()))
+print(
+    f" {hashlib.md5(block1 + suffix).hexdigest()} {hashlib.sha256(block1 + suffix).hexdigest()}"
+)
+print(
+    f" {hashlib.md5(block2 + suffix).hexdigest()} {hashlib.sha256(block2 + suffix).hexdigest()}"
+)

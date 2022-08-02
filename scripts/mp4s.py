@@ -13,7 +13,7 @@ def dprint(s):
   DEBUG = True
   DEBUG = False
   if DEBUG:
-    print("D " + s)
+    print(f"D {s}")
 
 
 def relocate(d, delta):
@@ -22,7 +22,7 @@ def relocate(d, delta):
   offset = 0
   tablecount = d.count(b"stco")
   dprint("stco found: %i" % tablecount)
-  for i in range(tablecount):
+  for _ in range(tablecount):
     offset = d.find(b"stco", offset)
     dprint("current offset: %0X" % offset)
 
@@ -42,9 +42,9 @@ def relocate(d, delta):
     dprint(" offset count: %i" % offcount)
     offset += 4 * 3
     offsets = struct.unpack(">%iI" % offcount, d[offset:offset + offcount * 4])
-    dprint(" offsets (old): %s" % repr(list(offsets))) 
+    dprint(f" offsets (old): {repr(list(offsets))}")
     offsets = [i + delta for i in offsets]
-    dprint(" (new) offsets: %s" % repr(offsets))
+    dprint(f" (new) offsets: {repr(offsets)}")
 
     d = d[:offset] + struct.pack(">%iI" % offcount, *offsets) + d[offset+offcount*4:]
 
@@ -101,7 +101,7 @@ col2 = prefix2 + suffix
 md5 = hashlib.md5(col1).hexdigest()
 
 if md5 == hashlib.md5(col2).hexdigest():
-  print("common md5: %s" % md5)
+  print(f"common md5: {md5}")
 
   with open("collisions1.mp4", "wb") as f:
     f.write(col1)

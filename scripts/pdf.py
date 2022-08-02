@@ -19,8 +19,7 @@ def EnclosedString(d, starts, ends):
 
 def getCount(d):
   s = EnclosedString(d, b"/Count ", b"/")
-  count = int(s)
-  return count
+  return int(s)
 
 def procreate(l): # :p
   return b" 0 R ".join(l) + b" 0 R"
@@ -40,13 +39,10 @@ def adjustPDF(contents):
     b"0000000000 00001 f "
     ]
 
-  i = 1
-  while i < objCount:
+  for i in range(1, objCount):
     # doesn't support comments at the end of object declarations
     off = contents.find(b"\n%i 0 obj\n" % i) + 1
     xrefLines.append(b"%010i 00000 n " % (off))
-    i += 1
-
   xref = b"\n".join(xrefLines)
 
   # XREF length should be unchanged
@@ -70,9 +66,10 @@ if len(sys.argv) == 1:
   print("Usage: pdf.py <file1.pdf> <file2.pdf>")
   sys.exit()
 
-os.system(MUTOOL + ' merge -o first.pdf %s' % sys.argv[1])
-os.system(MUTOOL + ' merge -o second.pdf %s' % sys.argv[2])
-os.system(MUTOOL + ' merge -o merged.pdf dummy.pdf %s %s' % (sys.argv[1], sys.argv[2]))
+os.system(MUTOOL + f' merge -o first.pdf {sys.argv[1]}')
+os.system(MUTOOL + f' merge -o second.pdf {sys.argv[2]}')
+os.system(MUTOOL +
+          f' merge -o merged.pdf dummy.pdf {sys.argv[1]} {sys.argv[2]}')
 
 with open("first.pdf", "rb") as f:
   d1 = f.read()
@@ -141,7 +138,7 @@ with open("hacked.pdf", "wb") as f:
   f.write(contents)
 
 # let's adjust offsets - -g to get rid of object 4 by garbage collecting
-os.system(MUTOOL + ' clean -gggg hacked.pdf cleaned.pdf')
+os.system(f'{MUTOOL} clean -gggg hacked.pdf cleaned.pdf')
 
 with open("cleaned.pdf", "rb") as f:
   cleaned = f.read()
@@ -179,11 +176,11 @@ assert md5 == hashlib.md5(file2).hexdigest()
 
 # to prove the files should be 100% valid
 print()
-os.system(MUTOOL + ' info -X collision1.pdf')
+os.system(f'{MUTOOL} info -X collision1.pdf')
 print()
 print()
-os.system(MUTOOL + ' info -X collision2.pdf')
+os.system(f'{MUTOOL} info -X collision2.pdf')
 
 print()
-print("MD5: %s" % md5)
+print(f"MD5: {md5}")
 print("Success!")

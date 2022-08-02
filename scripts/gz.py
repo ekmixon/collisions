@@ -121,9 +121,11 @@ def slice_archive(archive, chunk_l=int(MAXEF * 2.0)):
 	uncomp_l = len(uncomp_data)
 	comp_factor = uncomp_l // chunk_l
 
-	members = []
-	for i in range(comp_factor - 1):
-		members.append(gzip.compress(uncomp_data[chunk_l * i:chunk_l * (i+1)], mtime=0))
+	members = [
+		gzip.compress(uncomp_data[chunk_l * i : chunk_l * (i + 1)], mtime=0)
+		for i in range(comp_factor - 1)
+	]
+
 	members.append(gzip.compress(uncomp_data[chunk_l * (comp_factor-1):], mtime=0))
 	return members
 
@@ -274,5 +276,5 @@ with open("coll-2.gz", "wb") as f:
 	f.write(data2)
 
 print(hashlib.md5(data1).hexdigest())
-print("coll-1.gz => %s" % filename_a)
-print("coll-2.gz => %s" % filename_b)
+print(f"coll-1.gz => {filename_a}")
+print(f"coll-2.gz => {filename_b}")

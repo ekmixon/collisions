@@ -127,4 +127,4 @@ md5 = hashlib.md5(prefix1 + suffix).hexdigest()
 assert md5 == hashlib.md5(prefix2 + suffix).hexdigest()
 
 print("Success!")
-print("Common MD5: %s" % md5)
+print(f"Common MD5: {md5}")

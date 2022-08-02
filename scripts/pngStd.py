@@ -32,9 +32,9 @@ d1, d2 = get_data(sys.argv[1:3])
 
 hash = hashlib.sha256(d1[:0x21]).hexdigest()[:8]
 
-print("Header hash: %s" % hash)
+print(f"Header hash: {hash}")
 
-if not glob.glob("png1-%s.bin" % hash):
+if not glob.glob(f"png1-{hash}.bin"):
   print("Not found! Launching computation...")
 
   # make the complete prefix
@@ -44,7 +44,7 @@ if not glob.glob("png1-%s.bin" % hash):
     d1[:0x21],
     # 21-46 - padding chunk
     b"\0\0\0\x1a", b"aNGE", b":MD5 ISREALLY DEAD NOW!!1!", b"ROFL",
-    
+
     # 47-C7 - collision chunk
 
     # 47-4F
@@ -60,12 +60,12 @@ if not glob.glob("png1-%s.bin" % hash):
   # Note: make sure poc_no.sh is unmodified (ie, N=1)
   os.system("../hashclash/scripts/poc_no.sh prefix")
 
-  shutil.copyfile("collision1.bin", "png1-%s.bin" % hash)
-  shutil.copyfile("collision2.bin", "png2-%s.bin" % hash)
+  shutil.copyfile("collision1.bin", f"png1-{hash}.bin")
+  shutil.copyfile("collision2.bin", f"png2-{hash}.bin")
 
-with open("png1-%s.bin" % hash, "rb") as f:
+with open(f"png1-{hash}.bin", "rb") as f:
   block1 = f.read()
-with open("png2-%s.bin" % hash, "rb") as f:
+with open(f"png2-{hash}.bin", "rb") as f:
   block2 = f.read()
 
 assert len(block1) == 0xC0
@@ -97,7 +97,7 @@ suffix = b"".join([
     b"RealHash", # the remaining of the mARC chunk
 
     # C8-1C3 the tricky fake chunk
-    
+
     # the length, the type and the data should all take 0x100
       struct.pack(">I", 0x100 - 4*2 + len(d2[0x21:])),
       b"jUMP",
@@ -112,13 +112,13 @@ suffix = b"".join([
     d1[0x21:],
   ])
 
-with open("%s-1.png" % hash, "wb") as f:
+with open(f"{hash}-1.png", "wb") as f:
   f.write(b"".join([
     block1,
     suffix
     ]))
 
-with open("%s-2.png" % hash, "wb") as f:
+with open(f"{hash}-2.png", "wb") as f:
   f.write(b"".join([
     block2,
     suffix

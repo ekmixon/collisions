@@ -51,7 +51,7 @@ col2 = prefix2 + suffix
 md5 = hashlib.md5(col1).hexdigest()
 
 if md5 == hashlib.md5(col2).hexdigest():
-  print("md5: %s" % md5)
+  print(f"md5: {md5}")
 
   with open("collision1.jp2", "wb") as f:
     f.write(col1)
